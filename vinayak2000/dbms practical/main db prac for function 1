@@ -1,0 +1,84 @@
+postgres=# create table student(no int primary key,name varchar(30),marks integer);
+CREATE TABLE
+postgres=# insert into student(1,'vinayak',60);
+ERROR:  syntax error at or near "1"
+LINE 1: insert into student(1,'vinayak',60);
+                            ^
+postgres=# insert into student values(1,'vinayak',60);
+INSERT 0 1
+postgres=# insert into student values(2,'shubham',90);
+INSERT 0 1
+postgres=# insert into student values(3,'pawar',80);
+INSERT 0 1
+postgres=# insert into student values(4,'dhondu',70);
+INSERT 0 1
+postgres=# insert into student values(5,'pravin',85);
+INSERT 0 1
+postgres=# create or replace function mark_info(id integer) return integer as $$ declare markdisp integer; begin select mark into markdisp from student where no=id;return markdisp; end; $$ language 'plpgsql';
+ERROR:  syntax error at or near "return"
+LINE 1: create or replace function mark_info(id integer) return inte...
+                                                         ^
+postgres=# create or replace function mark_info(id integer) returns integer as $$ declare markdisp integer; begin select mark into markdisp from student where no=id;return markdisp; end; $$ language 'plpgsql';
+CREATE FUNCTION
+postgres=# select mark_info(4);
+ERROR:  column "mark" does not exist
+LINE 1: select mark               from student where no=id
+               ^
+QUERY:  select mark               from student where no=id
+CONTEXT:  PL/pgSQL function mark_info(integer) line 1 at SQL statement
+postgres=# select mark_info(2);
+ERROR:  column "mark" does not exist
+LINE 1: select mark               from student where no=id
+               ^
+QUERY:  select mark               from student where no=id
+CONTEXT:  PL/pgSQL function mark_info(integer) line 1 at SQL statement
+postgres=# create or replace function mark_info(id integer) returns integer as $$ declare markdisp integer; begin select marks into markdisp from student where no=id;return markdisp; end; $$ language 'plpgsql';
+CREATE FUNCTION
+postgres=# select mark_info(2);
+ mark_info 
+-----------
+        90
+(1 row)
+
+postgres=# select * from student;
+ no |  name   | marks 
+----+---------+-------
+  1 | vinayak |    60
+  2 | shubham |    90
+  3 | pawar   |    80
+  4 | dhondu  |    70
+  5 | pravin  |    85
+(5 rows)
+
+postgres=# create or replace function mark_info(id integer) returns (no int,name varchar(30),marks integer) as $$ begin return query select * from student where no=id; end; $$ language 'plpgsql';
+ERROR:  syntax error at or near "("
+LINE 1: ...or replace function mark_info(id integer) returns (no int,na...
+                                                             ^
+postgres=# create or replace function mark_info(id integer) returns(no int,name varchar(30),marks integer) as $$ begin return query select * from student where no=id; end; $$ language 'plpgsql';
+ERROR:  syntax error at or near "("
+LINE 1: ... or replace function mark_info(id integer) returns(no int,na...
+                                                             ^
+postgres=# create or replace function mark_info(id integer) returns table(no int,name varchar(30),marks integer) as $$ begin return query select * from student where no=id; end; $$ language 'plpgsql';
+ERROR:  cannot change return type of existing function
+HINT:  Use DROP FUNCTION mark_info(integer) first.
+postgres=# create or replace function mark_info1(id integer) returns table(no int,name varchar(30),marks integer) as $$ begin return query select * from student where no=id; end; $$ language 'plpgsql';
+CREATE FUNCTION
+postgres=# select mark_info1(2);
+ERROR:  column reference "no" is ambiguous
+LINE 1: select * from student where no=id
+                                    ^
+DETAIL:  It could refer to either a PL/pgSQL variable or a table column.
+QUERY:  select * from student where no=id
+CONTEXT:  PL/pgSQL function mark_info1(integer) line 1 at RETURN QUERY
+postgres=# create or replace function mark_info1(id integer) returns table(number int,naam varchar(30),mk integer) as $$ begin return query select * from student where no=id; end; $$ language 'plpgsql';
+ERROR:  cannot change return type of existing function
+DETAIL:  Row type defined by OUT parameters is different.
+HINT:  Use DROP FUNCTION mark_info1(integer) first.
+postgres=# create or replace function mark_info2(id integer) returns table(number int,naam varchar(30),mk integer) as $$ begin return query select * from student where no=id; end; $$ language 'plpgsql';
+CREATE FUNCTION
+postgres=# select mark_info2(2);
+   mark_info2   
+----------------
+ (2,shubham,90)
+(1 row)
+

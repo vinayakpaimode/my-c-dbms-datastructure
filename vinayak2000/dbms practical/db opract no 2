@@ -1,0 +1,328 @@
+computer09@computer09:~$ sudo su postgres
+[sudo] password for computer09: 
+postgres@computer09:/home/computer09$ 
+postgres@computer09:/home/computer09$ psql
+psql (9.3.24)
+Type "help" for help.
+
+postgres=# help
+You are using psql, the command-line interface to PostgreSQL.
+Type:  \copyright for distribution terms
+       \h for help with SQL commands
+       \? for help with psql commands
+       \g or terminate with semicolon to execute query
+       \q to quit
+postgres=# \connect vinayak;
+You are now connected to database "vinayak" as user "postgres".
+vinayak=# select * from doctor;
+ dno |  dname  |   city    
+-----+---------+-----------
+   1 | mahesh  | mumbai
+   2 | vinayak | pune
+   3 | ram     | pune
+   4 | sham    | nager
+   5 | rahul   | kolahapur
+(5 rows)
+
+vinayak=# select * from doct_pat;
+ dno | pno | fee  
+-----+-----+------
+   1 |   1 | 1000
+   2 |   2 | 2000
+   3 |   3 | 2000
+   4 |   4 | 3000
+   5 |   5 | 3000
+   5 |   4 | 4000
+   3 |   4 | 4000
+   2 |   1 | 4000
+   3 |   4 | 4000
+   4 |   5 | 3000
+   5 |   5 | 3000
+(11 rows)
+
+vinayak=# select * from patients;
+ pno | pat_name |  address  | disease 
+-----+----------+-----------+---------
+   1 | dhondu   | kolahapur | maleria
+   2 | vinu     | kanhur    | tv
+   3 | shubhu   | visapur   | cold
+   4 | java     | takli     | fever
+   5 | python   | bhalvni   | fever
+(5 rows)
+
+vinayak=# insert into doctor values(6,'sager','kolapur');
+INSERT 0 1
+vinayak=# insert into doctor values(7,'shan','rampur');
+INSERT 0 1
+vinayak=# insert into doctor values(8,'shahu','taskli');
+INSERT 0 1
+vinayak=# insert into doctor values(9,'shahu','takli');
+INSERT 0 1
+vinayak=# select * from doctor;
+ dno |  dname  |   city    
+-----+---------+-----------
+   1 | mahesh  | mumbai
+   2 | vinayak | pune
+   3 | ram     | pune
+   4 | sham    | nager
+   5 | rahul   | kolahapur
+   6 | sager   | kolapur
+   7 | shan    | rampur
+   8 | shahu   | taskli
+   9 | shahu   | takli
+(9 rows)
+
+vinayak=# insert into patients values(6,'dhondibhau','kanhur','ascidity');
+INSERT 0 1
+vinayak=# insert into patients values(7,'shubham','kanhur','cold');
+INSERT 0 1
+vinayak=# insert into patients values(8,'shubham','kanhur','fever');
+INSERT 0 1
+vinayak=# insert into patients values(9,'jathar','kanhur','null');
+INSERT 0 1
+vinayak=# select * from patients;
+ pno |  pat_name  |  address  | disease  
+-----+------------+-----------+----------
+   1 | dhondu     | kolahapur | maleria
+   2 | vinu       | kanhur    | tv
+   3 | shubhu     | visapur   | cold
+   4 | java       | takli     | fever
+   5 | python     | bhalvni   | fever
+   6 | dhondibhau | kanhur    | ascidity
+   7 | shubham    | kanhur    | cold
+   8 | shubham    | kanhur    | fever
+   9 | jathar     | kanhur    | null
+(9 rows)
+
+vinayak=# nsert into doct_pat values(1,1,1000);
+ERROR:  syntax error at or near "nsert"
+LINE 1: nsert into doct_pat values(1,1,1000);
+        ^
+vinayak=# insert into doct_pat values(6,1,1000);
+INSERT 0 1
+vinayak=# select * from doctor;
+ dno |  dname  |   city    
+-----+---------+-----------
+   1 | mahesh  | mumbai
+   2 | vinayak | pune
+   3 | ram     | pune
+   4 | sham    | nager
+   5 | rahul   | kolahapur
+   6 | sager   | kolapur
+   7 | shan    | rampur
+   8 | shahu   | taskli
+   9 | shahu   | takli
+(9 rows)
+
+vinayak=# select * from patients;
+ pno |  pat_name  |  address  | disease  
+-----+------------+-----------+----------
+   1 | dhondu     | kolahapur | maleria
+   2 | vinu       | kanhur    | tv
+   3 | shubhu     | visapur   | cold
+   4 | java       | takli     | fever
+   5 | python     | bhalvni   | fever
+   6 | dhondibhau | kanhur    | ascidity
+   7 | shubham    | kanhur    | cold
+   8 | shubham    | kanhur    | fever
+   9 | jathar     | kanhur    | null
+(9 rows)
+
+vinayak=# insert into doct_pat values(6,7,1000);
+ERROR:  insert or update on table "doct_pat" violates foreign key constraint "doct_pat_pno_fkey"
+DETAIL:  Key (pno)=(7) is not present in table "patient".
+vinayak=# create table doct_pat(dno int references from doctor,pno int references from patients);
+ERROR:  syntax error at or near "from"
+LINE 1: create table doct_pat(dno int references from doctor,pno int...
+                                                 ^
+vinayak=# create table doc_pat(dno int references doctor,pno int references patients);
+ERROR:  relation "doc_pat" already exists
+vinayak=# create table doct_pat(dno int references doctor,pno int references patients);
+ERROR:  relation "doct_pat" already exists
+vinayak=# create table doct_pats(dno int references doctor,pno int references patients);
+CREATE TABLE
+vinayak=# nsert into doct_pats values(1,1,1000);
+ERROR:  syntax error at or near "nsert"
+LINE 1: nsert into doct_pats values(1,1,1000);
+        ^
+vinayak=# insert into doct_pats values(1,1,1000);
+ERROR:  INSERT has more expressions than target columns
+LINE 1: insert into doct_pats values(1,1,1000);
+                                         ^
+vinayak=# dorp table  doct_pats;
+ERROR:  syntax error at or near "dorp"
+LINE 1: dorp table  doct_pats;
+        ^
+vinayak=# alter table doct_pats add fee int;
+ALTER TABLE
+vinayak=# insert into doct_pats values(1,1,1000);
+INSERT 0 1
+vinayak=# insert into doct_pats values(2,1,1000);
+INSERT 0 1
+vinayak=# insert into doct_pats values(6,5,1000);
+INSERT 0 1
+vinayak=# insert into doct_pats values(9,5,1000);
+INSERT 0 1
+vinayak=# insert into doct_pats values(6,5,500.);
+INSERT 0 1
+vinayak=# insert into doct_pats values(5,6,500.);
+INSERT 0 1
+vinayak=# insert into doct_pats values(5,1,500.);
+INSERT 0 1
+vinayak=# insert into doct_pats values(9,,500.);
+ERROR:  syntax error at or near ","
+LINE 1: insert into doct_pats values(9,,500.);
+                                       ^
+vinayak=# insert into doct_pats values(9,9,500.);
+INSERT 0 1
+vinayak=# insert into doct_pats values(9,8,500.);
+INSERT 0 1
+vinayak=# select count(pat_name) from doctor,patients,doct_pat where doctor.dno=doct_pat.dno and patients.pno=doct_pat.pno and dname='ram';
+ count 
+-------
+     3
+(1 row)
+
+vinayak=# select * from doct_pats;
+ dno | pno | fee  
+-----+-----+------
+   1 |   1 | 1000
+   2 |   1 | 1000
+   6 |   5 | 1000
+   9 |   5 | 1000
+   6 |   5 |  500
+   5 |   6 |  500
+   5 |   1 |  500
+   9 |   9 |  500
+   9 |   8 |  500
+(9 rows)
+
+vinayak=# select count(pat_name) from doctor,patients,doct_pats where doctor.dno=doct_pats.dno and patients.pno=doct_pats.pno and dname='shan';
+ count 
+-------
+     0
+(1 row)
+
+vinayak=# select count(pat_name) from doctor,patients,doct_pats where doctor.dno=doct_pats.dno and patients.pno=doct_pats.pno and dname='mahesh';
+ count 
+-------
+     1
+(1 row)
+
+vinayak=# select count(pat_name) from doctor,patients,doct_pats where doctor.dno=doct_pats.dno and patients.pno=doct_pats.pno and dname='shau';
+ count 
+-------
+     0
+(1 row)
+
+vinayak=# select dname,city from doctor,patients,doct_pat where doctor.dno=doct_pat.dno and patients.pno=doct_pat.pno and pat_name='python';
+ dname |   city    
+-------+-----------
+ rahul | kolahapur
+ sham  | nager
+ rahul | kolahapur
+(3 rows)
+
+vinayak=# select dname,city from doctor,patients,doct_pats where doctor.dno=doct_pat.dno and patients.pno=doct_pat.pno and pat_name='jathar';
+ERROR:  missing FROM-clause entry for table "doct_pat"
+LINE 1: ...y from doctor,patients,doct_pats where doctor.dno=doct_pat.d...
+                                                             ^
+vinayak=# select dname,city from doctor,patients,doct_pats where doctor.dno=doct_pats.dno and patients.pno=doct_pats.pno and pat_name='jathar';
+ dname | city  
+-------+-------
+ shahu | takli
+(1 row)
+
+vinayak=# select * from patients where disease=maleria;
+ERROR:  column "maleria" does not exist
+LINE 1: select * from patients where disease=maleria;
+                                             ^
+vinayak=# select * from patients where disease='maleria';
+ pno | pat_name |  address  | disease 
+-----+----------+-----------+---------
+   1 | dhondu   | kolahapur | maleria
+(1 row)
+
+vinayak=# select count(*) from patients where disease='maleria';
+ count 
+-------
+     1
+(1 row)
+
+vinayak=# select 
+vinayak-# * from docter;
+ERROR:  relation "docter" does not exist
+LINE 2: * from docter;
+               ^
+vinayak=# select 
+* from doctor;
+ dno |  dname  |   city    
+-----+---------+-----------
+   1 | mahesh  | mumbai
+   2 | vinayak | pune
+   3 | ram     | pune
+   4 | sham    | nager
+   5 | rahul   | kolahapur
+   6 | sager   | kolapur
+   7 | shan    | rampur
+   8 | shahu   | taskli
+   9 | shahu   | takli
+(9 rows)
+
+vinayak=# select 
+* from pa;
+ERROR:  relation "pa" does not exist
+LINE 2: * from pa;
+               ^
+vinayak=# select 
+* from patients;
+ pno |  pat_name  |  address  | disease  
+-----+------------+-----------+----------
+   1 | dhondu     | kolahapur | maleria
+   2 | vinu       | kanhur    | tv
+   3 | shubhu     | visapur   | cold
+   4 | java       | takli     | fever
+   5 | python     | bhalvni   | fever
+   6 | dhondibhau | kanhur    | ascidity
+   7 | shubham    | kanhur    | cold
+   8 | shubham    | kanhur    | fever
+   9 | jathar     | kanhur    | null
+(9 rows)
+
+vinayak=# select 
+* from doct_pats;
+ dno | pno | fee  
+-----+-----+------
+   1 |   1 | 1000
+   2 |   1 | 1000
+   6 |   5 | 1000
+   9 |   5 | 1000
+   6 |   5 |  500
+   5 |   6 |  500
+   5 |   1 |  500
+   9 |   9 |  500
+   9 |   8 |  500
+(9 rows)
+
+vinayak=#    
+vinayak=# create table emp(eno int primary key,ename varchar(30),desigination varchar(20),salary int);  
+CREATE TABLE
+vinayak=#    
+create table dept(dno int primary key,dname varchar(30),location varchar(20),eno int references emp);  
+CREATE TABLE
+vinayak=# insert into emp values(1,'shubhu','maneger',100000);
+INSERT 0 1
+vinayak=# insert into emp values(2,'dhondu','hr'200000);
+ERROR:  syntax error at or near "200000"
+LINE 1: insert into emp values(2,'dhondu','hr'200000);
+                                              ^
+vinayak=# insert into emp values(2,'dhondu','hr',200000);
+INSERT 0 1
+vinayak=# insert into emp values(3,'vinu','planthead',1000000);
+INSERT 0 1
+vinayak=# insert into emp values(4,'pravin','manger',100000);
+INSERT 0 1
+vinayak=# insert into emp values(5,'chiru','worker',10000);
+INSERT 0 1
+vinayak=# insert into dept values(1,'computer','parner',10000);
+

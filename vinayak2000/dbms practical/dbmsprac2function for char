@@ -1,0 +1,133 @@
+computer09@computer09:~$ sudo su postgres
+[sudo] password for computer09: 
+Sorry, try again.
+[sudo] password for computer09: 
+postgres@computer09:/home/computer09$ psql;
+psql (9.3.24)
+Type "help" for help.
+
+postgres=# create database vinayak;
+ERROR:  database "vinayak" already exists
+postgres=# \ connect vinayak
+Invalid command \. Try \? for help.
+postgres=# \connect vinayak
+You are now connected to database "vinayak" as user "postgres".
+vinayak=# create table student(no int primary key,name varchar(30),marks integer);
+ERROR:  relation "student" already exists
+vinayak=# selct * from student;
+ERROR:  syntax error at or near "selct"
+LINE 1: selct * from student;
+        ^
+vinayak=# select * from student;
+ no |  name   | marks 
+----+---------+-------
+  1 | vinayak |    60
+(1 row)
+
+vinayak=# drop table student;
+DROP TABLE
+vinayak=# create table student(no int primary key,name varchar(30),marks integer);
+CREATE TABLE
+vinayak=# insert into student values(1,'vinayak',60);
+INSERT 0 1
+vinayak=# insert into student values(2,'shubham',90);
+INSERT 0 1
+vinayak=# insert into student values(3,'pawar',80);
+INSERT 0 1
+vinayak=# insert into student values(4,'dhondu',70);
+INSERT 0 1
+vinayak=# insert into student values(5,'pravin',85);
+INSERT 0 1
+vinayak=# select * from student;
+ no |  name   | marks 
+----+---------+-------
+  1 | vinayak |    60
+  2 | shubham |    90
+  3 | pawar   |    80
+  4 | dhondu  |    70
+  5 | pravin  |    85
+(5 rows)
+
+vinayak=# create or replace function mark_info1(naam varchar(30)) returns table(no int,name varchar(30),marks integer) as $$ begin return query select * from student where name=naam; end; $$ language 'plpgsql';
+CREATE FUNCTION
+vinayak=# select * from mark_info1(pawar);
+ERROR:  column "pawar" does not exist
+LINE 1: select * from mark_info1(pawar);
+                                 ^
+vinayak=# select * from mark_info1(1);
+ERROR:  function mark_info1(integer) does not exist
+LINE 1: select * from mark_info1(1);
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+vinayak=# select * from mark_info1('pawar');
+ERROR:  column reference "name" is ambiguous
+LINE 1: select * from student where name=naam
+                                    ^
+DETAIL:  It could refer to either a PL/pgSQL variable or a table column.
+QUERY:  select * from student where name=naam
+CONTEXT:  PL/pgSQL function mark_info1(character varying) line 1 at RETURN QUERY
+vinayak=# create or replace function mark_info2(naam varchar(30)) returns table(no int,name varchar(30),marks integer) as $$ begin return query select * from student where naam=name; end; $$ language 'plpgsql';
+CREATE FUNCTION
+vinayak=# select * from mark_info1('pawar');ERROR:  column reference "name" is ambiguous
+LINE 1: select * from student where name=naam
+                                    ^
+DETAIL:  It could refer to either a PL/pgSQL variable or a table column.
+QUERY:  select * from student where name=naam
+CONTEXT:  PL/pgSQL function mark_info1(character varying) line 1 at RETURN QUERY
+vinayak=# select * from mark_info1(pawar);
+ERROR:  column "pawar" does not exist
+LINE 1: select * from mark_info1(pawar);
+                                 ^
+vinayak=# select * from mark_info1(pravin);
+ERROR:  column "pravin" does not exist
+LINE 1: select * from mark_info1(pravin);
+                                 ^
+vinayak=# select * from mark_info2(pravin);
+ERROR:  column "pravin" does not exist
+LINE 1: select * from mark_info2(pravin);
+                                 ^
+vinayak=# create or replace function mark_info2(gets(naam)) returns table(no int,name varchar(30),marks integer) as $$ begin return query select * from student where naam=name; end; $$ language 'plpgsql';
+ERROR:  type gets does not exist
+vinayak=# create or replace function mark_info2(&naam) returns table(no int,name varchar(30),marks integer) as $$ begin return query select * from student where &naam=name; end; $$ language 'plpgsql';
+ERROR:  syntax error at or near "&"
+LINE 1: create or replace function mark_info2(&naam) returns table(n...
+                                              ^
+vinayak=# create or replace function mark_info2(&naam char(30)) returns table(no int,name varchar(30),marks integer) as $$ begin return query select * from student where &naam=name; end; $$ language 'plpgsql';
+ERROR:  syntax error at or near "&"
+LINE 1: create or replace function mark_info2(&naam char(30)) return...
+                                              ^
+vinayak=# create or replace function mark_info(naam text) returns integer as $$ declare markdisp integer; begin select marks into markdisp from student where naam=name;return markdisp; end; $$ language 'plpgsql';
+CREATE FUNCTION
+vinayak=# mark_info('vianyak');ERROR:  syntax error at or near "mark_info"
+LINE 1: mark_info('vianyak');
+        ^
+vinayak=# create or replace function mark_info(naam char(30)) returns integer as $$ declare markdisp int; begin select marks into markdisp from student where naam=name;return markdisp; end; $$ language 'plpgsql';
+CREATE FUNCTION
+vinayak=# select mark_info('vinayak');
+ mark_info 
+-----------
+        60
+(1 row)
+
+vinayak=# select version();
+vinayak=# create or replace procedure transfer(int ,int,int) language 'plpgsql' as $$ begin update acc set balance=$3 where id = $1;update acc set balance = balance+3 wheare id=$2;commit;end;$$; 
+ERROR:  syntax error at or near "procedure"
+LINE 1: create or replace procedure transfer(int ,int,int) language ...
+                          ^
+vinayak=# create or replace procedure transfer(int ,int,int) language plpgsql as $$ begin update acc set balance=$3 where id = $1;update acc set balance = balance+3 wheare id=$2;commit;end;$$; 
+ERROR:  syntax error at or near "procedure"
+LINE 1: create or replace procedure transfer(int ,int,int) language ...
+                          ^
+vinayak=# CREATE PROCEDURE SelectAllCustomers @City nvarchar(30), @PostalCode nvarchar(10)
+vinayak-# AS
+vinayak-# SELECT * FROM Customers WHERE City = @City AND PostalCode = @PostalCode
+vinayak-# GO;
+ERROR:  syntax error at or near "PROCEDURE"
+LINE 1: CREATE PROCEDURE SelectAllCustomers @City nvarchar(30), @Pos...
+               ^
+vinayak=# \h;
+Invalid command \h;. Try \? for help.
+vinayak=# \h
+vinayak=# \h
+vinayak=# 
+

@@ -1,0 +1,26 @@
+#include<stdio.h>
+int main()
+{
+int a[3]={10,20,30};
+char c[3]={'A','B','C'};
+int i,*p=&a[2];
+char *q=&c[2];
+for(i=2;i>=0;i--)
+{
+printf("\n Address of %d element is %d and value is %d ",i,p,*p);
+p--;
+}
+for(i=2;i>=0;i--)
+{
+printf("\n Address of %d element is %d and value is %c ",i,q,*q);
+q--;
+}
+return 0;
+}
+/*
+
+address p element is -1369848304 and value is 10 
+ address Q element is -1369848272 and value is A 
+ address p element is -1369848288 and value is 50 
+ address Q element is -1369848269 and value is D computer09@computer09:~/Desktop/vinayak$ */
+

@@ -1,0 +1,349 @@
+v=# create or replace function ff() returns void as ' begin declare c3 cursor select * from item where cost between 500 and 1000; ino int ;d text;begin open c3 ;loop fetch c3 into ino,d text when not found;raise notice ''ino %'',ino;raise excepton ''descreption %'',d;end loop;cl;ose c3;end;end'language 'plpgsql';  
+ERROR:  syntax error at or near "select"
+LINE 1: ...on ff() returns void as ' begin declare c3 cursor select * f...
+                                                             ^
+v=# create or replace function ff() returns void as ' begin declare c3 cursor select ino from item where cost between 500 and 1000; ino item%rowtype ;d text;begin open c3 ;loop fetch c3 into ino,d text when not found;raise notice ''ino %'',ino;raise excepton ''descreption %'',d;end loop;cl;ose c3;end;end'language 'plpgsql';  
+ERROR:  syntax error at or near "select"
+LINE 1: ...on ff() returns void as ' begin declare c3 cursor select ino...
+                                                             ^
+v=# create or replace function ff() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d text;begin open c3 ;loop fetch c3 into ino,d text when not found;raise notice ''ino %'',ino;raise excepton ''descreption %'',d;end loop;cl;ose c3;end;end'language 'plpgsql';  
+ERROR:  record or row variable cannot be part of multiple-item INTO list
+LINE 1: ...type ;d text;begin open c3 ;loop fetch c3 into ino,d text wh...
+                                                             ^
+v=# create or replace function ff() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d text;begin open c3 ;loop fetch c3 into ino,d; exit when not found;raise exception ''ino %'',ino;raise excepton ''descreption %'',d;end loop;cl;ose c3;end;end'language 'plpgsql';  
+ERROR:  record or row variable cannot be part of multiple-item INTO list
+LINE 1: ...type ;d text;begin open c3 ;loop fetch c3 into ino,d; exit w...
+                                                             ^
+v=# create or replace function ff() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d text;begin open c3 ;loop fetch c3 into ino; exit when not found;raise exception ''ino %'',ino;raise excepton ''descreption %'',d;end loop;cl;ose c3;end;end'language 'plpgsql';  
+ERROR:  unrecognized exception condition "excepton"
+CONTEXT:  compilation of PL/pgSQL function "ff" near line 1
+v=# create or replace function ff() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d text;begin open c3 ;loop fetch c3 into ino; exit when not found;raise exception ''ino %'',ino;raise excepton ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql';  
+ERROR:  unrecognized exception condition "excepton"
+CONTEXT:  compilation of PL/pgSQL function "ff" near line 1
+v=# create or replace function ff() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d text;begin open c3 ;loop fetch c3 into ino; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql';  CREATE FUNCTION
+v=# select ff();
+NOTICE:  ino (2,,,)
+NOTICE:  descreption <NULL>
+NOTICE:  ino (3,,,)
+NOTICE:  descreption <NULL>
+NOTICE:  ino (4,,,)
+NOTICE:  descreption <NULL>
+NOTICE:  ino (5,,,)
+NOTICE:  descreption <NULL>
+NOTICE:  ino (1,,,)
+NOTICE:  descreption <NULL>
+ ff 
+----
+ 
+(1 row)
+
+v=# create or replace function ff() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d text;begin open c3 ;loop fetch c3 into ino,d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql';  
+ERROR:  record or row variable cannot be part of multiple-item INTO list
+LINE 1: ...type ;d text;begin open c3 ;loop fetch c3 into ino,d; exit w...
+                                                             ^
+v=# \h
+v=# create or replace function ff() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d text;begin open c3 ;loop fetch c3 into ino,d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql';  
+ERROR:  record or row variable cannot be part of multiple-item INTO list
+LINE 1: ...type ;d text;begin open c3 ;loop fetch c3 into ino,d; exit w...
+                                                             ^
+v=# create or replace function ff() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d text;begin open c3 ;loop fetch c3 into ino and d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql';  
+ERROR:  syntax error at or near "and"
+LINE 1: ...ype ;d text;begin open c3 ;loop fetch c3 into ino and d; exi...
+                                                             ^
+v=# create or replace function ff() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d text;begin open c3 ;loop fetch c3 into ino;fetch c3 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql';  
+CREATE FUNCTION
+v=# select ff();
+NOTICE:  ino (2,,,)
+NOTICE:  descreption 3
+NOTICE:  ino (4,,,)
+NOTICE:  descreption 5
+ ff 
+----
+ 
+(1 row)
+
+v=# create or replace function ff() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d item%rowtype;begin open c3 ;loop fetch c3 into ino;fetch c3 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql';  
+CREATE FUNCTION
+v=# select ff();
+NOTICE:  ino (2,,,)
+NOTICE:  descreption (3,,,)
+NOTICE:  ino (4,,,)
+NOTICE:  descreption (5,,,)
+ ff 
+----
+ 
+(1 row)
+
+v=# create or replace function ff1() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d item%rowtype;begin open c3 ;loop fetch c3 into ino;fetch c3 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql';  
+CREATE FUNCTION
+v=# select ff1();
+NOTICE:  ino (2,,,)
+NOTICE:  descreption (3,,,)
+NOTICE:  ino (4,,,)
+NOTICE:  descreption (5,,,)
+ ff1 
+-----
+ 
+(1 row)
+
+v=# create or replace function ff1() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d item%rowtype;begin open c3 ;loop fetch c3 into ino;fetch c3 into d; exit when not found;raise notice ''ino %'',ino;raise exceptioin ''decreption  %s'',d;end loop;close c3;end;end'language 'plpgsql';  
+ERROR:  unrecognized exception condition "exceptioin"
+CONTEXT:  compilation of PL/pgSQL function "ff1" near line 1
+v=# create or replace function ff1() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d item%rowtype;begin open c3 ;loop fetch c3 into ino;fetch c3 into d; exit when not found;raise notice ''ino %'',ino;raise exception ''decreption  %s'',d;end loop;close c3;end;end'language 'plpgsql';  
+CREATE FUNCTION
+v=# select ff1();
+NOTICE:  ino (2,,,)
+ERROR:  decreption  (3,,,)s
+v=# create or replace function ff2() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d item%rowtype;begin open c3 ;loop fetch c3 into ino;fetch c3 into d; exit when not found;raise exception ''ino %'',ino;raise exception ''decreption  %'',d;end loop;close c3;end;end'language 'plpgsql';  
+CREATE FUNCTION
+v=# select ff2();
+ERROR:  ino (2,,,)
+v=# create or replace function ff2() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d item%rowtype;begin open c3 ;loop fetch c3 into ino;fetch c3 into d; exit when not found; raise notice ''ino %'',ino;raise notice ''decreption  %'',description;end loop;close c3;end;end'language 'plpgsql';  
+CREATE FUNCTION
+v=# select ff2();
+NOTICE:  ino (2,,,)
+ERROR:  column "description" does not exist
+LINE 1: SELECT description
+               ^
+QUERY:  SELECT description
+CONTEXT:  PL/pgSQL function ff2() line 1 at RAISE
+v=# select * from item;
+ ino | description | weight | cost 
+-----+-------------+--------+------
+   2 | playwood    |    400 |  800
+   3 | ceramic     |    200 |  500
+   4 | pop         |    300 |  600
+   5 | cement      |    400 |  600
+   1 | metal       |    300 |  700
+(5 rows)
+
+v=# create or replace function pp() return intger as ' declare pc cursor for select * from item;  
+v'# select ff2();
+v'# ^C
+v=# create or replace function pp() return intger as ' declare pc cursor for select * from item;  
+v'# ;
+v'# ^C
+v=# create or replace function pp() return intger as ' declare pc cursor for select * from item;  
+v'# v'# select ff2()
+v-# select * from item;^C
+v=# create or replace function pp() return intger as ' declare pc cursor for select * from item;  
+v'# ^C
+v=# ^C
+v=# ^C
+v=# create or replace function pp() return intger as ' declare pc cursor for select * from item;rec item%rowtype; begin for rec pc loop raise notice ''%'',rec.ino;endloop;return 1;end;'language 'plpgsql';
+ERROR:  syntax error at or near "return"
+LINE 1: create or replace function pp() return intger as ' declare p...
+                                        ^
+v=# create or replace function pp() returns intger as ' declare pc cursor for select * from item;rec item%rowtype; begin for rec pc loop raise notice ''%'',rec.ino;endloop;return 1;end;'language 'plpgsql';
+ERROR:  type "intger" does not exist
+v=# create or replace function pp() returns intger as ' declare pc cursor for select * from item;rec item%rowtype; begin for rec pc loop raise notice ''%'',rec.ino;endloop;return 1;end;'language 'plpgsql';
+ERROR:  type "intger" does not exist
+v=# create or replace function pp() returns integer as ' declare pc cursor for select * from item;rec item%rowtype; begin for rec pc loop raise notice ''%'',rec.ino;endloop;return 1;end;'language 'plpgsql';
+ERROR:  syntax error at or near "pc"
+LINE 1: ...elect * from item;rec item%rowtype; begin for rec pc loop ra...
+                                                             ^
+v=# create or replace function pp() returns integer as ' declare pc cursor for select * from item;rec item%rowtype; begin for in rec pc loop raise notice ''%'',rec.ino;endloop;return 1;end;'language 'plpgsql';
+ERROR:  syntax error at or near "in"
+LINE 1: ...or select * from item;rec item%rowtype; begin for in rec pc ...
+                                                             ^
+v=# create or replace function pp() returns integer as ' declare pc cursor for select * from item;rec item%rowtype; begin for rec in pc loop raise notice ''%'',rec.ino;endloop;return 1;end;'language 'plpgsql';
+ERROR:  syntax error at or near "endloop"
+LINE 1: ...gin for rec in pc loop raise notice ''%'',rec.ino;endloop;re...
+                                                             ^
+v=# create or replace function pp() returns integer as ' declare pc cursor for select * from item;rec item%rowtype; begin for rec in pc loop raise notice ''%'',rec.ino;end loop;return 1;end;'language 'plpgsql';
+CREATE FUNCTION
+v=# select pp();
+NOTICE:  2
+NOTICE:  3
+NOTICE:  4
+NOTICE:  5
+NOTICE:  1
+ pp 
+----
+  1
+(1 row)
+
+v=#  create or replace function ff3() returns void as ' begin declare c3,c4 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d item%rowtype;begin open c3 ;loop fetch c3 into ino;fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql'
+v-# ;
+ERROR:  missing data type declaration at or near ","
+LINE 1: ... function ff3() returns void as ' begin declare c3,c4 cursor...
+                                                             ^
+v=#  create or replace function ff3() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000;c4 cursor for select ino from item where cost between 500 and 1000;   ino item%rowtype;d item%text;begin open c3 ;open c4;loop fetch c3 into ino;fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql'
+;
+ERROR:  invalid type name "item%text"
+LINE 1: ...e cost between 500 and 1000;   ino item%rowtype;d item%text;...
+                                                             ^
+v=#  create or replace function ff3() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000;c4 cursor for select ino from item where cost between 500 and 1000;   ino item%rowtype;d varchar(30);begin open c3 ;open c4;loop fetch c3 into ino;fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql'
+;
+CREATE FUNCTION
+v=# select * from ff3();
+NOTICE:  ino (2,,,)
+NOTICE:  descreption 2
+NOTICE:  ino (3,,,)
+NOTICE:  descreption 3
+NOTICE:  ino (4,,,)
+NOTICE:  descreption 4
+NOTICE:  ino (5,,,)
+NOTICE:  descreption 5
+NOTICE:  ino (1,,,)
+NOTICE:  descreption 1
+ ff3 
+-----
+ 
+(1 row)
+
+v=#  create or replace function ff4() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000;c4 cursor for select ino from item where cost between 500 and 1000;ino item%rowtype;d varchar(30);begin open c3 ;loop fetch c3 into ino;open c4;loop  fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql'
+;
+ERROR:  syntax error at or near ";"
+LINE 1: ...e notice ''descreption %'',d;end loop;close c3;end;end'langu...
+                                                             ^
+v=#  create or replace function ff4() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000;c4 cursor for select ino from item where cost between 500 and 1000;ino item%rowtype;d varchar(30);begin open c3 ;loop fetch c3 into ino;open c4;loop  fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;end loop;close c3;end;end'language 'plpgsql'
+;
+CREATE FUNCTION
+v=# select * from ff4();
+NOTICE:  ino (2,,,)
+NOTICE:  descreption 2
+NOTICE:  ino (2,,,)
+NOTICE:  descreption 3
+NOTICE:  ino (2,,,)
+NOTICE:  descreption 4
+NOTICE:  ino (2,,,)
+NOTICE:  descreption 5
+NOTICE:  ino (2,,,)
+NOTICE:  descreption 1
+ERROR:  cursor "c4" already in use
+CONTEXT:  PL/pgSQL function ff4() line 1 at OPEN
+v=# 
+v=# 
+v=# 
+v=# 
+v=# 
+v=#  create or replace function ff4() returns integer as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000;c4 cursor for select ino from item where cost between 500 and 1000;ino item%rowtype;d varchar(30);begin open c3 ;loop fetch c3 into ino;open c4;loop  fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;end loop;close c3;end;end'language 'plpgsql'
+;
+ERROR:  cannot change return type of existing function
+HINT:  Use DROP FUNCTION ff4() first.
+v=#  create or replace function ff5() returns integer as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000;c4 cursor for select ino from item where cost between 500 and 1000;ino item%rowtype;d varchar(30);begin open c3 ;loop fetch c3 into ino;open c4;loop  fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;end loop;close c3;end;end'language 'plpgsql'
+;
+CREATE FUNCTION
+v=# select * from ff5();
+NOTICE:  ino (2,,,)
+NOTICE:  descreption 2
+NOTICE:  ino (2,,,)
+NOTICE:  descreption 3
+NOTICE:  ino (2,,,)
+NOTICE:  descreption 4
+NOTICE:  ino (2,,,)
+NOTICE:  descreption 5
+NOTICE:  ino (2,,,)
+NOTICE:  descreption 1
+ERROR:  cursor "c4" already in use
+CONTEXT:  PL/pgSQL function ff5() line 1 at OPEN
+v=# 
+v=# 
+v=# 
+v=# 
+v=#  create or replace function ff6() returns integer as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000;c4 cursor for select description  from item where cost between 500 and 1000;ino item%rowtype;d varchar(30);begin open c3 ;loop fetch c3 into ino;open c4;loop  fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;end loop;close c3;end;end'language 'plpgsql'
+;
+CREATE FUNCTION
+v=# select * from ff6();
+NOTICE:  ino (2,,,)
+NOTICE:  descreption playwood
+NOTICE:  ino (2,,,)
+NOTICE:  descreption ceramic
+NOTICE:  ino (2,,,)
+NOTICE:  descreption pop
+NOTICE:  ino (2,,,)
+NOTICE:  descreption cement
+NOTICE:  ino (2,,,)
+NOTICE:  descreption metal
+ERROR:  cursor "c4" already in use
+CONTEXT:  PL/pgSQL function ff6() line 1 at OPEN
+v=#  create or replace function ff6() returns integer as ' begin declare c5 cursor for select ino from item where cost between 500 and 1000;c4 cursor for select description  from item where cost between 500 and 1000;ino item%rowtype;d varchar(30);begin open c5 ;loop fetch c5 into ino;open c4;loop  fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;end loop;close c3;end;end'language 'plpgsql'
+;
+ERROR:  "c3" is not a known variable
+LINE 1: ...otice ''descreption %'',d;end loop;end loop;close c3;end;end...
+                                                             ^
+v=#  create or replace function ff6() returns integer as ' begin declare c5 cursor for select ino from item where cost between 500 and 1000;c4 cursor for select description  from item where cost between 500 and 1000;ino item%rowtype;d varchar(30);begin open c5 ;loop fetch c5 into ino;open c4;loop  fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;end loop;close c5;end;end'language 'plpgsql'
+;
+CREATE FUNCTION
+v=#  create or replace function ff7() returns integer as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000;c4 cursor for select description  from item where cost between 500 and 1000;ino item%rowtype;d varchar(30);begin open c3 ;loop fetch c3 into ino;open c4;loop  fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;end loop;close c3;end;end'language 'plpgsql'
+;
+CREATE FUNCTION
+v=# select * from ff7();
+NOTICE:  ino (2,,,)
+NOTICE:  descreption playwood
+NOTICE:  ino (2,,,)
+NOTICE:  descreption ceramic
+NOTICE:  ino (2,,,)
+NOTICE:  descreption pop
+NOTICE:  ino (2,,,)
+NOTICE:  descreption cement
+NOTICE:  ino (2,,,)
+NOTICE:  descreption metal
+ERROR:  cursor "c4" already in use
+CONTEXT:  PL/pgSQL function ff7() line 1 at OPEN
+v=# 
+v=# 
+v=# 
+v=#  create or replace function ff7() returns integer as ' begin declare c5 cursor for select ino from item where cost between 500 and 1000;c6 cursor for select description  from item where cost between 500 and 1000;ino item%rowtype;d varchar(30);begin open c5 ;loop fetch c5 into ino;open c5;loop  fetch c6 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;end loop;close c5;close c6;end;end'language 'plpgsql';
+CREATE FUNCTION
+v=#  create or replace function ff8() returns integer as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000;c4 cursor for select description  from item where cost between 500 and 1000;ino item%rowtype;d varchar(30);begin open c3 ;loop fetch c3 into ino;open c4;loop  fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;end loop;close c5;end;end'language 'plpgsql'
+;
+ERROR:  "c5" is not a known variable
+LINE 1: ...otice ''descreption %'',d;end loop;end loop;close c5;end;end...
+                                                             ^
+v=#  create or replace function ff8() returns integer as ' begin declare c5 cursor for select ino from item where cost between 500 and 1000;c6 cursor for select description  from item where cost between 500 and 1000;ino item%rowtype;d varchar(30);begin open c5 ;loop fetch c5 into ino;open c6;loop  fetch c6 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;end loop;close c5;close c6;end;end'language 'plpgsql'
+;
+CREATE FUNCTION
+v=# select * from ff8();
+NOTICE:  ino (2,,,)
+NOTICE:  descreption playwood
+NOTICE:  ino (2,,,)
+NOTICE:  descreption ceramic
+NOTICE:  ino (2,,,)
+NOTICE:  descreption pop
+NOTICE:  ino (2,,,)
+NOTICE:  descreption cement
+NOTICE:  ino (2,,,)
+NOTICE:  descreption metal
+ERROR:  cursor "c6" already in use
+CONTEXT:  PL/pgSQL function ff8() line 1 at OPEN
+v=# 
+v=# 
+v=# 
+v=# 
+v=# 
+v=# 
+v=# 
+v=#  create or replace function ff9() returns integer as ' begin declare c8 cursor for select ino from item where cost > 500 and cost<1000;c9 cursor for select description  from item where cost > 500 and cost < 1000;ino item%rowtype;d varchar(30);begin open c8 ;loop fetch c8 into ino;open c9;loop  fetch c9 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;end loop;close c8;close c9;end;end'language 'plpgsql'
+;
+CREATE FUNCTION
+v=# select * from ff9();
+NOTICE:  ino (2,,,)
+NOTICE:  descreption playwood
+NOTICE:  ino (2,,,)
+NOTICE:  descreption pop
+NOTICE:  ino (2,,,)
+NOTICE:  descreption cement
+NOTICE:  ino (2,,,)
+NOTICE:  descreption metal
+ERROR:  cursor "c9" already in use
+CONTEXT:  PL/pgSQL function ff9() line 1 at OPEN
+v=# 
+v=# 
+v=# 
+v=# 
+v=# 
+v=# create or replace function ff3() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000;c4 cursor for select ino from item where cost between 500 and 1000;   ino item%rowtype;d varchar(30);begin open c3 ;open c4;loop fetch c3 into ino;fetch c4 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql'
+v-# u
+v-# ;
+ERROR:  syntax error at or near "u"
+LINE 2: u
+        ^
+v=# 
+v=# 
+v=# 
+v=# 
+v=# 
+v=# create or replace function ff12() returns void as ' begin declare c3 cursor for select ino from item where cost between 500 and 1000; ino item%rowtype ;d text;begin open c3 ;loop fetch c3 into ino;fetch c3 into d; exit when not found;raise notice ''ino %'',ino;raise notice ''descreption %'',d;end loop;close c3;end;end'language 'plpgsql'
+

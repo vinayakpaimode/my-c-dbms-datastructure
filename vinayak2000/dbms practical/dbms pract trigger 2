@@ -1,0 +1,43 @@
+computer09@computer09:~$ sudo su postgres
+[sudo] password for computer09: 
+postgres@computer09:/home/computer09$ psql
+psql (9.3.24)
+Type "help" for help.
+
+postgres=# \connect paimode
+You are now connected to database "paimode" as user "postgres".
+paimode=#  create table item(ino int primary key,iname varchar(60),rate int);
+CREATE TABLE
+paimode=# 
+paimode=# insert into item values(1,'keybord',1000);
+INSERT 0 1
+paimode=# insert into item values(1,'keybord',1000);
+ERROR:  duplicate key value violates unique constraint "item_pkey"
+DETAIL:  Key (ino)=(1) already exists.
+paimode=# insert into item values(2,'cpu',30000);
+INSERT 0 1
+paimode=# create or replace function f3() returns trigger as 'begin if (new.rate-old.rate)<2000 then raise exception ''values should be greter than 2000 %'',new;end if;return new; end' language 'plpgsql'
+paimode-# ;
+CREATE FUNCTION
+paimode=# create trigger t3 before insert or update on item for each row execute procedure f3();
+CREATE TRIGGER
+paimode=# select * from item;
+ ino |  iname  | rate  
+-----+---------+-------
+   1 | keybord |  1000
+   2 | cpu     | 30000
+(2 rows)
+
+paimode=#  update item set rate=3000 where ino=1;
+UPDATE 1
+paimode=#  update item set rate=1000 where ino=1;
+ERROR:  values should be greter than 2000 (1,keybord,1000)
+paimode=# select * from item;
+ ino |  iname  | rate  
+-----+---------+-------
+   2 | cpu     | 30000
+   1 | keybord |  3000
+(2 rows)
+
+paimode=# 
+

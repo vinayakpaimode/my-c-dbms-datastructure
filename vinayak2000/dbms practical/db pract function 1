@@ -1,0 +1,62 @@
+computer09@computer09:~$ sudo su postgres
+[sudo] password for computer09: 
+Sorry, try again.
+[sudo] password for computer09: 
+postgres@computer09:/home/computer09$ plsql
+No command 'plsql' found, did you mean:
+ Command 'psql' from package 'postgres-xc-client' (universe)
+ Command 'psql' from package 'postgresql-client-common' (main)
+plsql: command not found
+postgres@computer09:/home/computer09$ psql
+psql (9.3.24)
+Type "help" for help.
+
+postgres=# create or replace function add(a integer,b integer) return integer as $$ begin return a+b; end; $$ language 'plpgsql'; 
+ERROR:  syntax error at or near "return"
+LINE 1: ...eate or replace function add(a integer,b integer) return int...
+                                                             ^
+postgres=# create or replace function add(a integer,b integer) returns integer as $$ begin return a+b; end; $$ language 'plpgsql'; 
+CREATE FUNCTION
+postgres=# select add(20,30);
+ add 
+-----
+  50
+(1 row)
+
+postgres=# create or replace function add1(IN a integer,IN b integer,out c integer) return integer as $$ begin c:=a+b; end; $$ language 'plpgsql'; 
+ERROR:  syntax error at or near "return"
+LINE 1: ...ion add1(IN a integer,IN b integer,out c integer) return int...
+                                                             ^
+postgres=# create or replace function add1(IN a integer,IN b integer,out c integer) returns integer as $$ begin c:=a+b; end; $$ language 'plpgsql'; 
+CREATE FUNCTION
+postgres=# select add1(30,50);
+ add1 
+------
+   80
+(1 row)
+
+postgres=# select add1(30,50,30);
+ERROR:  function add1(integer, integer, integer) does not exist
+LINE 1: select add1(30,50,30);
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+postgres=# select add1(30,50);
+ add1 
+------
+   80
+(1 row)
+
+postgres=# create or replace function add1(INOUT a integer) as $$ begin a:=a*a; end; $$ language 'plpgsql'; 
+CREATE FUNCTION
+postgres=# create or replace function add1(IN a integer,IN b integer,out c integer) returns integer as $$ begin c:=a+b; end; $$ language 'plpgsql'; 
+CREATE FUNCTION
+postgres=# create or replace function square(INOUT a integer) as $$ begin a:=a*a; end; $$ language 'plpgsql'; 
+CREATE FUNCTION
+postgres=# select square(30);
+ square 
+--------
+    900
+(1 row)
+
+postgres=# 
+
